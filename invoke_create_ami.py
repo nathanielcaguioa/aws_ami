@@ -35,7 +35,8 @@ def create_new_ami(instance_id, newaminame, ami_description):
         Name=newaminame,
         Description=ami_description
     )
-    print("Image created successfully.")
+    return create_ami_response['ImageId']
+
 
         
 for instance_name in servernames:
@@ -62,8 +63,16 @@ for instance_name in servernames:
         else
             newaminame = instance_name + inputaminame
         
-        ami_description = f'AMI created using Jenkins with {inputticketnumber}'        
-        create_new_ami(instance_id, newaminame, ami_description)
+        ami_description = f'AMI created using Jenkins with {inputticketnumber}'
+    
+        image_id = create_new_ami(instance_id, newaminame, ami_description)
+    
+        if image_id:
+            print(f"AMI created with ID: {image_id}")
+        else:
+            print("AMI creation failed.")
+        
+
     else:
         print(f"No instance found with the name '{instance_name}'")
 
