@@ -58,7 +58,7 @@ for instance_name in servernames:
     instance_id = get_instance_id_by_name(instance_name)
     if instance_id:
         print(f"Instance ID for '{instance_name}' is: {instance_id}")
-        If not inputaminame:
+        If len(inputaminame) == 0:
             newaminame = instance_name + inputticketnumber
         else
             newaminame = instance_name + inputaminame
