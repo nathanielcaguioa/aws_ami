@@ -1,17 +1,17 @@
 from datetime import datetime
 import boto3
 import json
+import os
+inputticketnumber = os.environ['ticketnumber']
+inputaminame = os.environ['ami_name']
 
-api_keys_file = open("api_keys.json")
-api_keys = json.load(api_keys_file)
-target_env = "deltekdev"
-#instance_name = "USEADVSS1UPD1"
-new_tagkey = "MainWindow-Automation"
-new_tagvalue = "Citrix"
+
+
+print(f"'{inputticketnumber}' and '{inputaminame}'")
 
 with open('serverlists.txt', 'r') as file:
     servernames = [line.strip() for line in file]
-
+    
 def get_instance_id_by_name(instance_name):
 
     response = ec2_client.describe_instances(
@@ -22,17 +22,22 @@ def get_instance_id_by_name(instance_name):
             }
         ]
     )
-
     if response['Reservations']:
-        instance_id = response['Reservations'][0]['Instances'][0]['InstanceId']
-        return instance_id
+            instance_id = response['Reservations'][0]['Instances'][0]['InstanceId']
+            return instance_id
     else:
-        return None
+            return None
 
-def create_new_tags(instance_id, new_tagkey, new_tagvalue):
-    ec2_client.create_tags(Resources=[instance_id], Tags=[{'Key': new_tagkey, 'Value': new_tagvalue}])
-    print("Tags added successfully.")
+def create_new_ami(instance_id, newaminame, ami_description):
+    
+    create_ami_response = ec2_client.create_image(
+        InstanceId=instance_id,
+        Name=newaminame,
+        Description=ami_description
+    )
+    print("Image created successfully.")
 
+        
 for instance_name in servernames:
 
     region_lookup = {
@@ -46,23 +51,20 @@ for instance_name in servernames:
     }
     aws_region  = region_lookup[instance_name[:4]]
     print(f"'{aws_region}'")
-
-    def create_session(api_keys, target_env, aws_region):
-        return boto3.Session(
-            aws_access_key_id=api_keys[target_env]['key'],
-            aws_secret_access_key=api_keys[target_env]['secret'],
-            region_name=aws_region
-        )
-
-
-    session = create_session(api_keys, target_env, aws_region)
-    ec2_client = session.client('ec2')
+    
+    ec2_client = boto3.client('ec2',region_name=aws_region)
 
     instance_id = get_instance_id_by_name(instance_name)
     if instance_id:
         print(f"Instance ID for '{instance_name}' is: {instance_id}")
+        If not inputaminame:
+            newaminame = instance_name + inputticketnumber
+        else
+            newaminame = instance_name + inputaminame
+        
+        ami_description = f'AMI created using Jenkins with {inputticketnumber}'        
+        create_new_ami(instance_id, newaminame, ami_description)
     else:
         print(f"No instance found with the name '{instance_name}'")
 
-    create_new_tags(instance_id, new_tagkey, new_tagvalue)
-
+    
