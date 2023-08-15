@@ -60,7 +60,7 @@ for instance_name in servernames:
         print(f"Instance ID for '{instance_name}' is: {instance_id}")
         if len(inputaminame) == 0:
             newaminame = instance_name + inputticketnumber
-        else
+        else:
             newaminame = instance_name + inputaminame
         
         ami_description = f'AMI created using Jenkins with {inputticketnumber}'
