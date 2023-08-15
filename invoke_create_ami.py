@@ -33,6 +33,7 @@ def create_new_ami(instance_id, newaminame, ami_description):
     create_ami_response = ec2_client.create_image(
         InstanceId=instance_id,
         Name=newaminame,
+        NoReboot=True,
         Description=ami_description
     )
     return create_ami_response['ImageId']
