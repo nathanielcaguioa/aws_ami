@@ -40,7 +40,7 @@ def create_new_ami(instance_id, newaminame, ami_description):
 
         
 for instance_name in servernames:
-
+    instance_name = instance_name.upper()
     region_lookup = {
         "USEA":"us-east-1",
         "USWE":"us-west-2",
