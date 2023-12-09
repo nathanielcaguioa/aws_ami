@@ -2,9 +2,12 @@ from datetime import datetime
 import boto3
 import json
 import os
+import sys
+
 inputticketnumber = os.environ['ticketnumber']
 inputaminame = os.environ['ami_name']
-
+inputservername = sys.argv[1]
+inputregion = sys.argv[2]
 
 
 print(f"'{inputticketnumber}' and '{inputaminame}'")
