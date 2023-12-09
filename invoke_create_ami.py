@@ -12,16 +12,14 @@ inputregion = sys.argv[2]
 
 print(f"'{inputticketnumber}' and '{inputaminame}'")
 
-with open('serverlists.txt', 'r') as file:
-    servernames = [line.strip() for line in file]
     
-def get_instance_id_by_name(instance_name):
+def get_instance_id_by_name(inputservername):
 
     response = ec2_client.describe_instances(
         Filters=[
             {
                 'Name': 'tag:Name',
-                'Values': [instance_name]
+                'Values': [inputservername]
             }
         ]
     )
@@ -42,30 +40,18 @@ def create_new_ami(instance_id, newaminame, ami_description):
     return create_ami_response['ImageId']
 
 
-        
-for instance_name in servernames:
-    instance_name = instance_name.upper()
-    region_lookup = {
-        "USEA":"us-east-1",
-        "USWE":"us-west-2",
-        "CACE":"ca-central-1",
-        "EUWE":"eu-west-1",
-        "EUCE":"eu-central-1",
-        "APSP":"ap-southeast-1",
-        "APAU":"ap-southeast-2"
-    }
-    aws_region  = region_lookup[instance_name[:4]]
-    print(f"'{aws_region}'")
     
-    ec2_client = boto3.client('ec2',region_name=aws_region)
+    
+    ec2_client = boto3.client('ec2',region_name=inputregion)
 
-    instance_id = get_instance_id_by_name(instance_name)
+    instance_id = get_instance_id_by_name(inputservername)
+    
     if instance_id:
-        print(f"Instance ID for '{instance_name}' is: {instance_id}")
+        print(f"Instance ID for '{inputservername}' is: {instance_id}")
         if len(inputaminame) == 0:
-            newaminame = instance_name + "_" + inputticketnumber
+            newaminame = inputservername + "_" + inputticketnumber
         else:
-            newaminame = instance_name + "_" + inputaminame
+            newaminame = inputservername + "_" + inputaminame
         
         ami_description = f'AMI created using Jenkins with {inputticketnumber}'
     
@@ -78,6 +64,6 @@ for instance_name in servernames:
         
 
     else:
-        print(f"No instance found with the name '{instance_name}'")
+        print(f"No instance found with the name '{inputservername}'")
 
     
